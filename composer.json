@@ -1,0 +1,12 @@
+{
+    "name": "niisan-tokyo/phpnn",
+    "description": "The neural network (NN) written by PHP.",
+    "type": "library",
+    "license": "MTL",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Niisan\\phpml\\": "src/"
+        }
+    }
+}
