@@ -6,7 +6,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Niisan\\phpml\\": "src/"
+            "Niisan\\phpnn\\": "src/"
         }
     }
 }
