@@ -2,7 +2,7 @@
     "name": "niisan-tokyo/phpnn",
     "description": "The neural network (NN) written by PHP.",
     "type": "library",
-    "license": "MTL",
+    "license": "MIT",
     "require": {},
     "autoload": {
         "psr-4": {
