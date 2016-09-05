@@ -14,7 +14,7 @@ class HyperboricTangent extends Base
 
     public function defferential($val)
     {
-        $temp = $this->activate($val);
-        return $this->max * $this->max - $temp * $temp;
+        $temp = tanh($val);
+        return $this->max *(1 - $temp * $temp);
     }
 }
