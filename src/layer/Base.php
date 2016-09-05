@@ -9,18 +9,22 @@ abstract class Base
     private $matrix = [];
     private $state_history = [];
     private $input_history = [];
-    private $effect = 0.008;
-    private $history_count = 11;
+    private $effect = 0.01;
+    private $history_count = 1;
 
-    public function init($input_dim, $output_dim)
+    public function init($input_dim, $output_dim, $option = [])
     {
         echo "$input_dim, $output_dim \n";
         $this->input_dim = $input_dim;
         $this->output_dim = $output_dim;
         for ($i = 0; $i < $output_dim; $i++) {
             for ($j = 0; $j < $input_dim; $j++) {
-                $this->matrix[$i][$j] = mt_rand(-1000, 1000) * 0.1 / ($input_dim * $output_dim);
+                $this->matrix[$i][$j] = self::nonzero_rand() / ($input_dim * $output_dim);
             }
+        }
+
+        foreach ($option as $key => $val) {
+            $this->{$key} = $val;
         }
     }
 
@@ -46,7 +50,7 @@ abstract class Base
         return $ret;
     }
 
-    public function backProp($states, $num)
+    public function backProp($states, $num = 0)
     {
         $ret = array_fill(0, $this->input_dim, 0);
         $history_count = count($this->state_history);
@@ -87,6 +91,12 @@ abstract class Base
     public function getMatrix()
     {
         return $this->matrix;
+    }
+
+    protected static function nonzero_rand()
+    {
+        $rand = mt_rand(1, 10000) * 0.0001;
+        return (mt_rand(1, 2) === 1) ? $rand : -$rand;
     }
 
     /**

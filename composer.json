@@ -8,5 +8,10 @@
         "psr-4": {
             "Niisan\\phpnn\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
     }
 }
