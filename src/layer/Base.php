@@ -12,6 +12,11 @@ abstract class Base
     private $effect = 0.01;
     private $history_count = 1;
 
+    public function createInstance()
+    {
+        return new static;
+    }
+
     public function init($input_dim, $output_dim, $option = [])
     {
         echo "$input_dim, $output_dim \n";
@@ -26,6 +31,8 @@ abstract class Base
         foreach ($option as $key => $val) {
             $this->{$key} = $val;
         }
+
+        return $this;
     }
 
     public function prop($states)
@@ -42,7 +49,7 @@ abstract class Base
 
         $this->state_history[] = $states;
         $this->input_history[] = $param;
-        if ($this->count > $this->history_count) {
+        if (count($this->state_history) > $this->history_count) {
             array_shift($this->state_history);
             array_shift($this->input_history);
         }
