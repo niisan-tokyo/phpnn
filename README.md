@@ -5,7 +5,7 @@ The neural network (NN) written by PHP.
 You can get phpnn using composer with following command:
 
 ```
-composer require niisan-tokyo/phpnn:php-dev
+composer require niisan-tokyo/phpnn:dev-master
 ```
 
 ## Usage
