@@ -1,3 +1,4 @@
 /vendor/
 /tests/data/out/
 phpunit.phar
+/dest/
