@@ -94,6 +94,11 @@ abstract class Base
         $this->matrix = unserialize($str);
     }
 
+    public function export()
+    {
+        return $this->matrix;
+    }
+
 
     public function getMatrix()
     {
@@ -116,4 +121,5 @@ abstract class Base
 
 
     protected abstract function defferential($val);
+
 }
