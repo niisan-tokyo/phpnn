@@ -24,7 +24,7 @@ abstract class Base
         $this->output_dim = $output_dim;
         for ($i = 0; $i < $output_dim; $i++) {
             for ($j = 0; $j < $input_dim; $j++) {
-                $this->matrix[$i][$j] = self::nonzero_rand() / $output_dim;
+                $this->matrix[$i][$j] = self::nonzero_rand() / $input_dim;
             }
         }
 
@@ -107,8 +107,7 @@ abstract class Base
 
     protected static function nonzero_rand()
     {
-        $rand = mt_rand(1, 10000) * 0.0001;
-        return (mt_rand(1, 2) === 1) ? $rand : -$rand;
+        return (mt_rand(1, 2) === 1) ? 1 : -1;
     }
 
     /**

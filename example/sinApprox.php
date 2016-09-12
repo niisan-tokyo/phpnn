@@ -9,7 +9,7 @@ use Niisan\phpnn\layer\Linear;
 $bundle = new Niisan\phpnn\bundle\Simple();
 
 $effect = 0.1;
-$seperate = 10000;
+$seperate = 4000;
 $bundle->add(Relu::createInstance()->init(1, 64, ['effect' => $effect]));
 $bundle->add(HyperbolicTangent::createInstance()->init(64, 64, ['effect' => $effect]));
 $bundle->add(Relu::createInstance()->init(64, 64, ['effect' => $effect]));
@@ -17,10 +17,10 @@ $bundle->add(Linear::createInstance()->init(64, 1, ['effect' => $effect]));
 
 $check = [];
 $title = [];
-for ($i = 1; $i < 30001; $i++) {
+for ($i = 1; $i < 12001; $i++) {
     $x = mt_rand(-10000, 10000) * pi() / 20000;
     $y = $bundle->exec($x);
-    $bundle->correct(sin($x));
+    $bundle->correct(sin($x)*cos($x));
     if ($i % $seperate === 0) {
         $check[] = check($bundle);
         $title[] = $i;
@@ -30,11 +30,11 @@ for ($i = 1; $i < 30001; $i++) {
 echo "End of machine learning!\n";
 
 array_unshift($title, 'x');
-$str = implode(',', $title) . "\n";
+$str = implode(',', $title) . ",sin\n";
 $loss = 0;
 for ($i = -40; $i != 41; $i++) {
     $x = pi() * $i / 80;
-    $z = sin($x);
+    $z = sin($x)*cos($x);
     $str .= $x . ',';
     foreach ($check as $val) {
         $str .= $val[$i + 40] .  ',';
@@ -51,7 +51,7 @@ function check($bundle)
     for ($i = -40; $i != 41; $i++) {
         $x = pi() * $i / 80;
         $y = $bundle->exec($x);
-        $z = sin($x);
+        $z = sin($x)*cos($x);
         $ret[] = $y[0];
         $loss += ($y[0] - $z) * ($y[0] - $z);
     }
