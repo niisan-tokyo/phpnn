@@ -10,7 +10,7 @@ use Niisan\phpnn\layer\HyperbolicTangent;
 $bundle = new Niisan\phpnn\bundle\Simple();
 
 $effect = 0.005;
-$seperate = [1, 100, 1000, 10000, 100000];
+$seperate = [1, 100, 1000, 10000, 30000, 60000, 100000];
 $bundle->add(Relu::createInstance()->init(2, 32, ['effect' => $effect]));
 $bundle->add(HyperbolicTangent::createInstance()->init(32, 64, ['effect' => $effect]));
 $bundle->add(Relu::createInstance()->init(64, 32, ['effect' => $effect]));

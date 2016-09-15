@@ -92,6 +92,7 @@ abstract class Base
     {
         $this->state_history = [];
         $this->input_history = [];
+        $this->dropout_history = [];
     }
 
     public function save($file)
