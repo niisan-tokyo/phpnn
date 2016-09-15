@@ -3,7 +3,12 @@
     "description": "The neural network (NN) written by PHP.",
     "type": "library",
     "license": "MIT",
-    "require": {},
+    "require":{
+        
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5"
+    },
     "autoload": {
         "psr-4": {
             "Niisan\\phpnn\\": "src/"

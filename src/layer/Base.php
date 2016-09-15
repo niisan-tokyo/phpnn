@@ -11,6 +11,8 @@ abstract class Base
     private $input_history = [];
     private $effect = 0.01;
     private $history_count = 1;
+    private $dropout = 0;
+    private $dropout_history = [];
 
     public function createInstance()
     {
@@ -38,20 +40,29 @@ abstract class Base
     public function prop($states)
     {
         $ret = [];
+        $dropout = $this->dropout();
+
+        // propergate
         for ($i = 0; $i < $this->output_dim; $i++) {
             $temp = 0;
+
             for ($j = 0; $j < $this->input_dim; $j++) {
                 $temp += $this->matrix[$i][$j] * $states[$j];
             }
-            $ret[$i] = $this->activate($temp);
+
+            // if dropout exists, activation is 0.
+            $ret[$i] = $this->activate($temp) * $dropout[$i];
             $param[$i] = $temp;
         }
 
+        // memorize several epock states
         $this->state_history[] = $states;
         $this->input_history[] = $param;
+        $this->dropout_history[] = $dropout;
         if (count($this->state_history) > $this->history_count) {
             array_shift($this->state_history);
             array_shift($this->input_history);
+            array_shift($this->dropout_history);
         }
 
         return $ret;
@@ -64,9 +75,10 @@ abstract class Base
         $ref = $history_count - 1 - $num;
         $back_state = $this->state_history[$ref];
         $back_input = $this->input_history[$ref];
+        $dropout = $this->dropout_history[$ref];
         $delta = [];
         for ($i = 0; $i < $this->output_dim; $i++) {
-            $delta[$i] = $this->defferential($back_input[$i]) * $states[$i];
+            $delta[$i] = $this->defferential($back_input[$i]) * $states[$i] * $dropout[$i];
             for ($j = 0; $j < $this->input_dim; $j++) {
                 $ret[$j] += $this->matrix[$i][$j] * $delta[$i];
                 $this->matrix[$i][$j] -= $this->effect * $delta[$i] * $back_state[$j];
@@ -108,6 +120,21 @@ abstract class Base
     protected static function nonzero_rand()
     {
         return (mt_rand(1, 2) === 1) ? 1 : -1;
+    }
+
+    protected function dropout()
+    {
+        $vec = array_fill(0, $this->output_dim, 1);
+        if ($this->dropout != 0) {
+            $num = floor($this->output_dim * $this->dropout);
+            if ($num > 0) {
+                $keys = array_rand($vec, $num);
+                foreach ($keys as $val) {
+                    $vec[$val] = 0;
+                }
+            }
+        }
+        return $vec;
     }
 
     /**
