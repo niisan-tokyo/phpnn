@@ -78,4 +78,11 @@ abstract class Base
             echo "loss: $loss \n";
         }
     }
+
+    protected function dropSwitch()
+    {
+        foreach ($this->bundle as $layer) {
+            $layer->switchDrop();
+        }
+    }
 }

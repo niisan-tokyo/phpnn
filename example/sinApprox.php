@@ -9,16 +9,16 @@ use Niisan\phpnn\layer\Linear;
 $bundle = new Niisan\phpnn\bundle\Simple();
 
 $effect = 0.1;
-$seperate = 4000;
+$seperate = 40000;
 $bundle->add(Relu::createInstance()->init(1, 64, ['effect' => $effect]));
 $bundle->add(HyperbolicTangent::createInstance()->init(64, 64, ['effect' => $effect]));
-$bundle->add(Relu::createInstance()->init(64, 64, ['effect' => $effect]));
+$bundle->add(Relu::createInstance()->init(64, 64, ['effect' => $effect, 'dropout' => 0.5]));
 $bundle->add(Linear::createInstance()->init(64, 1, ['effect' => $effect]));
 
 $check = [];
 $title = [];
-for ($i = 1; $i < 12001; $i++) {
-    $x = mt_rand(-10000, 10000) * pi() / 20000;
+for ($i = 1; $i < 120001; $i++) {
+    $x = mt_rand(-1000, 1000) * pi() / 2000;
     $y = $bundle->exec($x);
     $bundle->correct(sin($x)*cos($x));
     if ($i % $seperate === 0) {
@@ -26,6 +26,7 @@ for ($i = 1; $i < 12001; $i++) {
         $title[] = $i;
     }
 }
+$bundle->switch();
 
 echo "End of machine learning!\n";
 
@@ -46,6 +47,7 @@ file_put_contents('../dest/sin.csv', $str);
 
 function check($bundle)
 {
+    $bundle->switch();
     $loss = 0;
     $ret = [];
     for ($i = -40; $i != 41; $i++) {
@@ -57,5 +59,6 @@ function check($bundle)
     }
 
     echo "summary loss: $loss \n";
+    $bundle->switch();
     return $ret;
 }

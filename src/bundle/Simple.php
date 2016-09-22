@@ -15,4 +15,9 @@ class Simple extends Base
     {
         $this->backLoop($value);
     }
+
+    public function switch()
+    {
+        $this->dropSwitch();
+    }
 }
