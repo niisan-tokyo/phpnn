@@ -1,17 +1,47 @@
 <?php
 namespace Niisan\phpnn\bundle;
 
+use ProgressBar\Manager as Progress;
+
 abstract class Base
 {
     private $bundle = [];
     private $value = [];
-    private $epock = 0;
+    private $epoch = 0;
+
+    private $last_dimension;
 
     protected $loss_val = 0;
 
-    public function add($obj)
+    public function add($obj, $option)
     {
         $this->bundle[] = $obj;
+
+        $input_dim = $this->last_dimension ?? $option['input_dim'];
+        $obj->init($input_dim, $option);
+        $this->last_dimension = $obj->getOutputDim();
+    }
+
+    public function fit($train, $option)
+    {
+        $X = $train[0];
+        $Y = $train[1];
+        $epoch = $option['epoch'] ?? 1;
+        for ($i = 1; $i < $epoch + 1; $i++) {
+            echo "$i / $epoch \n";
+            $prog = new Progress(0, count($X));
+            foreach ($X as $key => $val) {
+                $this->exec($val);
+                $this->correct($Y[$key]);
+                $prog->advance();
+            }
+
+            if (isset($option['test'])) {
+                $method = $option['test_function'] ?? 'loss';
+                $this->{'test' . ucfirst($method)}($option['test']);
+            }
+
+        }
 
     }
 
@@ -73,9 +103,9 @@ abstract class Base
 
     protected function lossDisp($state)
     {
-        if ($this->epock % 1000 == 0) {
+        if ($this->epoch % 1000 == 0) {
             $loss = $this->loss($state);
-            echo "loss: $loss \n";
+            //echo "loss: $loss \n";
         }
     }
 
@@ -84,5 +114,20 @@ abstract class Base
         foreach ($this->bundle as $layer) {
             $layer->switchDrop();
         }
+    }
+
+    protected function testLoss($test_data)
+    {
+        $X = $test_data[0];
+        $Y = $test_data[1];
+        //print_r($test_data);
+        $loss = 0;
+        foreach ($X as $key => $val) {
+            $res = $this->exec($val);
+            //print_r($res);
+            $loss += $this->loss($Y[$key]);
+        }
+
+        echo "loss: $loss \n";
     }
 }

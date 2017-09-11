@@ -20,12 +20,16 @@ abstract class Base
         return new static;
     }
 
-    public function init($input_dim, $output_dim, $option = [])
+    public function __construct($output_dim)
     {
-        echo "$input_dim, $output_dim \n";
-        $this->input_dim = $input_dim;
         $this->output_dim = $output_dim;
-        for ($i = 0; $i < $output_dim; $i++) {
+    }
+
+    public function init($input_dim, $option = [])
+    {
+        echo "$input_dim, $this->output_dim \n";
+        $this->input_dim = $input_dim;
+        for ($i = 0; $i < $this->output_dim; $i++) {
             for ($j = 0; $j < $input_dim; $j++) {
                 $this->matrix[$i][$j] = self::nonzero_rand() / $input_dim;
             }
@@ -106,6 +110,10 @@ abstract class Base
         return $this->matrix;
     }
 
+    public function getOutputDim()
+    {
+        return $this->output_dim;
+    }
 
     public function getMatrix()
     {

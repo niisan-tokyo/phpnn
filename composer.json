@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require":{
-        
+        "guiguiboy/php-cli-progress-bar": "^0.0.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5"

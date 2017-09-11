@@ -7,19 +7,11 @@ class Relu extends Base
 
     public function activate($val)
     {
-        if ($val > 0) {
-            return $val;
-        }
-
-        return 0;
+        return max(0, $val);
     }
 
     public function defferential($val)
     {
-        if ($val > 0) {
-            return 1;
-        }
-
-        return 0;
+        return ($val >= 0) ? 1: 0;
     }
 }
