@@ -7,7 +7,8 @@
  *
  * この状態で機械学習機構にたまったデータセットを投入することで、
  * 反応領域を学習機が十分推定できる状態になるか実験する
- * @var [type]
+ *
+ * また、データをセーブできるようにしておき、一度保存したモデルは後で読み出せるようにしておく
  */
 
 require('../vendor/autoload.php');
@@ -16,16 +17,24 @@ use Niisan\phpnn\layer\Relu;
 use Niisan\phpnn\layer\Sin;
 use Niisan\phpnn\layer\Linear;
 use Niisan\phpnn\layer\HyperbolicTangent;
+use Niisan\phpnn\bundle\Simple;
 
-$bundle = new Niisan\phpnn\bundle\Simple();
+// モデルの出力先
+$model_filename = '../dest/targetHitModel';
+$epoch  = 5;
+$effect = 0.005;
 
-$effect = 0.01;
-$epoch  = 10;
+// すでに出力済みのモデルがあれば、それを読み込み、無ければモデルを構築する
+if (file_exists($model_filename)) {
+    $bundle = Simple::load($model_filename);
+} else {
+    $bundle = new Simple();
 
-$bundle->add(new Relu(32), ['effect' => $effect, 'input_dim' => 2]);
-$bundle->add(new HyperbolicTangent(64), ['effect' => $effect]);
-$bundle->add(new Relu(32), ['effect' => $effect]);
-$bundle->add(new HyperbolicTangent(1), ['effect' => $effect]);
+    $bundle->add(new Relu(32), ['effect' => $effect, 'input_dim' => 2]);
+    $bundle->add(new HyperbolicTangent(64), ['effect' => $effect]);
+    $bundle->add(new Relu(32), ['effect' => $effect]);
+    $bundle->add(new HyperbolicTangent(1), ['effect' => $effect]);
+}
 
 // データセットを作成する
 $trainX = [];
@@ -49,6 +58,7 @@ for ($i = 0; $i < 10000; $i++) {
 
 // フィッティングする
 $bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY]]);
+$bundle->save($model_filename);
 
 // 図に書き出す
 output($bundle, $epoch);

@@ -5,7 +5,7 @@ use ProgressBar\Manager as Progress;
 
 abstract class Base
 {
-    private $bundle = [];
+    protected $bundle = [];
     private $value = [];
     private $epoch = 0;
 
@@ -130,4 +130,35 @@ abstract class Base
 
         echo "loss: $loss \n";
     }
+
+    /**
+     * 現在のモデルの状況を保存する
+     *
+     * @param  string $file ファイル名
+     */
+    public function save(string $file)
+    {
+        $str = serialize($this);
+        file_put_contents($file, $str);
+    }
+
+    /**
+     * モデルをロードする
+     *
+     * @param  string $file ファイル名
+     *
+     * @return static       モデルのインスタンスを返却する
+     */
+    public static function load(string $file)
+    {
+        $data = file_get_contents($file);
+        return unserialize($data);
+    }
+
+    public function __sleep()
+    {
+        return ['bundle'];
+    }
+
+    public function __wakeup(){}
 }

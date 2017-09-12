@@ -9,12 +9,13 @@ namespace Niisan\phpnn\layer;
  */
 abstract class Base
 {
-    private $input_dim = 0;
-    private $output_dim = 0;
-    private $matrix = [];
+    protected $input_dim = 0;
+    protected $output_dim = 0;
+    protected $matrix = [];
+    protected $effect = 0.01;
+
     private $state_history = [];
     private $input_history = [];
-    private $effect = 0.01;
     private $history_count = 1;
     private $dropout = 0;
     private $is_dropout = true;
@@ -198,6 +199,15 @@ abstract class Base
         }
         return $vec;
     }
+
+    public function __sleep()
+    {
+        return [
+            'input_dim', 'output_dim', 'matrix', 'effect'
+        ];
+    }
+
+    public function __wakeup(){}
 
     /**
      * 活性化関数
