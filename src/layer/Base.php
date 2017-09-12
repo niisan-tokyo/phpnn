@@ -2,6 +2,11 @@
 
 namespace Niisan\phpnn\layer;
 
+/**
+ * NNを構成する各レイヤーのベースクラス
+ *
+ *
+ */
 abstract class Base
 {
     private $input_dim = 0;
@@ -25,6 +30,17 @@ abstract class Base
         $this->output_dim = $output_dim;
     }
 
+    /**
+     * レイヤーを初期化する
+     *
+     * 初期化は、与えられたオプションをパラメータに適用し、
+     * 重みをランダムな値で初期化する
+     *
+     * @param  int    $input_dim 入力次元数
+     * @param  array  $option    オプション値
+     *
+     * @return static            自分自身を返す
+     */
     public function init($input_dim, $option = [])
     {
         echo "$input_dim, $this->output_dim \n";
@@ -42,6 +58,16 @@ abstract class Base
         return $this;
     }
 
+    /**
+     * 入力パラメータを用いて次のパラメータセットを出力する
+     *
+     * ドロップアウトが設定されていると、ランダムで設定された割合だけ
+     * 出力パラメータをゼロにする
+     *
+     * @param  array $states 入力パラメータ
+     *
+     * @return array         出力パラメータ
+     */
     public function prop($states)
     {
         $ret = [];
@@ -68,6 +94,15 @@ abstract class Base
         return $ret;
     }
 
+    /**
+     * 逆伝播を行い、重み行列の更新を行う
+     *
+     * dropoutで設定された項目は変更の対象外になる
+     *
+     * @param  array $states 次の層の逆伝播状態
+     *
+     * @return array         逆伝播出力
+     */
     public function backProp($states)
     {
         $ret = array_fill(0, $this->input_dim, 0);
@@ -86,6 +121,9 @@ abstract class Base
         return $ret;
     }
 
+    /**
+     * 内部状態をリセットする
+     */
     public function reset()
     {
         $this->state_history = [];
@@ -93,17 +131,28 @@ abstract class Base
         $this->dropout_history = [];
     }
 
+    /**
+     * 現在のレイヤーの状態をファイルに書き出す
+     *
+     * @param  string $file ファイル名
+     */
     public function save($file)
     {
         //print_r($this->matrix);
         file_put_contents($file, serialize($this->matrix));
     }
 
+    /**
+     * ファイルを読み込んで、重み状態を復元する
+     *
+     * @param  string $file ファイル名
+     */
     public function load($file)
     {
         $str = file_get_contents($file);
         $this->matrix = unserialize($str);
     }
+
 
     public function export()
     {

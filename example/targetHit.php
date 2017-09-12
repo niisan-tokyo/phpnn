@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * ドーナツ型の領域 1 < x^2 + y^2 < 4 に(x, y)の組があったときだけ反応するような系を考える。
+ * 現在、その系がどのようなものかはわからないと仮定し、実験を繰り返すことで(x, y)に対する
+ * 反応を観察し、データをためたと仮定する
+ *
+ * この状態で機械学習機構にたまったデータセットを投入することで、
+ * 反応領域を学習機が十分推定できる状態になるか実験する
+ * @var [type]
+ */
+
 require('../vendor/autoload.php');
 
 use Niisan\phpnn\layer\Relu;
@@ -9,10 +19,9 @@ use Niisan\phpnn\layer\HyperbolicTangent;
 
 $bundle = new Niisan\phpnn\bundle\Simple();
 
-$effect = 0.005;
+$effect = 0.01;
 $epoch  = 10;
 
-$seperate = [1, 100, 1000, 10000, 30000, 60000, 100000];
 $bundle->add(new Relu(32), ['effect' => $effect, 'input_dim' => 2]);
 $bundle->add(new HyperbolicTangent(64), ['effect' => $effect]);
 $bundle->add(new Relu(32), ['effect' => $effect]);
@@ -38,24 +47,10 @@ for ($i = 0; $i < 10000; $i++) {
     }
 }
 
-//print_r($trainX);
-//print_r($trainY);
-
+// フィッティングする
 $bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY]]);
 
-
-// for ($i = 1; $i < 1001; $i++) {
-//     $x = mt_rand(-200, 20000) / 10000.0;
-//     $y = mt_rand(-200, 20000) / 10000.0;
-//     $z = $bundle->exec([$x, $y]);
-//     $ishit = donuts($x, $y);
-//     $bundle->correct($ishit);
-//
-//     if (in_array($i, $seperate)) {
-//         output($bundle, $i);
-//     }
-// }
-//
+// 図に書き出す
 output($bundle, $epoch);
 
 $count = 0;
@@ -85,10 +80,10 @@ function donuts($x, $y)
 function output($bundle, $count)
 {
     $out = '';
-    for ($i = 0; $i < 40; $i++) {
-        for ($j = 0; $j < 40; $j++) {
-            $x = ($i - 20) / 10.0;
-            $y = ($j - 20) / 10.0;
+    for ($i = 0; $i < 60; $i++) {
+        for ($j = 0; $j < 60; $j++) {
+            $x = ($i - 30) / 10.0;
+            $y = ($j - 30) / 10.0;
             $z = $bundle->exec([$x, $y]);
             if ($z[0] > 0) {
                 $out .= "$x,$y\n";
