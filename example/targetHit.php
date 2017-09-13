@@ -21,8 +21,8 @@ use Niisan\phpnn\bundle\Simple;
 
 // モデルの出力先
 $model_filename = '../dest/targetHitModel';
-$epoch  = 5;
-$effect = 0.0005;
+$epoch  = 8;
+$effect = 0.01;
 
 // すでに出力済みのモデルがあれば、それを読み込み、無ければモデルを構築する
 if (file_exists($model_filename)) {
@@ -30,10 +30,10 @@ if (file_exists($model_filename)) {
 } else {
     $bundle = new Simple();
 
-    $bundle->add(new Relu(32), ['effect' => $effect, 'input_dim' => 2]);
-    $bundle->add(new HyperbolicTangent(64), ['effect' => $effect]);
-    $bundle->add(new Relu(32), ['effect' => $effect]);
-    $bundle->add(new HyperbolicTangent(1), ['effect' => $effect]);
+    $bundle->add(new Relu(32), ['input_dim' => 2]);
+    $bundle->add(new HyperbolicTangent(64));
+    $bundle->add(new Relu(32));
+    $bundle->add(new HyperbolicTangent(1));
 }
 
 // データセットを作成する
@@ -57,7 +57,7 @@ for ($i = 0; $i < 10000; $i++) {
 }
 
 // フィッティングする
-$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY], 'effect' => $effect]);
+$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY], 'effect' => $effect, 'batch_size' => 16]);
 $bundle->save($model_filename);
 
 // 図に書き出す

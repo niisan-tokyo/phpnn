@@ -10,10 +10,12 @@ abstract class Base
     private $epoch = 0;
 
     private $last_dimension;
+    private $batch_size = 1;
+    private $batch_count = 0;
 
     protected $loss_val = 0;
 
-    public function add($obj, $option)
+    public function add($obj, $option = [])
     {
         $this->bundle[] = $obj;
 
@@ -27,6 +29,7 @@ abstract class Base
         $X = $train[0];
         $Y = $train[1];
         $epoch = $option['epoch'] ?? 1;
+        $this->batch_size = $option['batch_size'] ?? 1;
         if (isset($option['effect'])) {
             $this->setEffect($option['effect']);
         }
@@ -40,6 +43,7 @@ abstract class Base
                 $this->correct($Y[$key]);
                 $prog->advance();
             }
+            $this->correctMatrix();
 
             if (isset($option['test'])) {
                 $method = $option['test_function'] ?? 'loss';
@@ -71,25 +75,35 @@ abstract class Base
 
     protected function backLoop($state)
     {
+        $this->batch_count++;
         $diff = [];
         $state = (is_array($state)) ? $state : [$state];
         $diff = $this->lossDiff($state);
-
-        $this->lossDisp($state);
 
         $ref = count($this->bundle) - 1;
         for ($i = $ref; $i >= 0; $i--) {
             $diff = $this->bundle[$i]->backProp($diff);
         }
 
-        $this->epock++;
+        if ($this->batch_count == $this->batch_size) {
+            $this->correctMatrix();
+            $this->batch_count = 0;
+        }
+
+    }
+
+    protected function correctMatrix()
+    {
+        foreach ($this->bundle as $layer) {
+            $layer->correct();
+        }
     }
 
     protected function lossDiff($state)
     {
         $ret = [];
         foreach ($state as $key => $val) {
-            $ret[$key] = $this->value[$key] - $val;
+            $ret[$key] = ($this->value[$key] - $val) / $this->batch_size;
         }
 
         return $ret;
@@ -104,14 +118,6 @@ abstract class Base
         }
 
         return $loss;
-    }
-
-    protected function lossDisp($state)
-    {
-        if ($this->epoch % 1000 == 0) {
-            $loss = $this->loss($state);
-            //echo "loss: $loss \n";
-        }
     }
 
     protected function dropSwitch()

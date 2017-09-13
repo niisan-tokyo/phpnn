@@ -20,6 +20,7 @@ abstract class Base
     private $dropout = 0;
     private $is_dropout = true;
     private $dropout_history = [];
+    private $delta_matrix = [];
 
     public static function createInstance()
     {
@@ -115,11 +116,27 @@ abstract class Base
             $delta[$i] = $this->defferential($back_input[$i]) * $states[$i] * $dropout[$i];
             for ($j = 0; $j < $this->input_dim; $j++) {
                 $ret[$j] += $this->matrix[$i][$j] * $delta[$i];
-                $this->matrix[$i][$j] -= $this->effect * $delta[$i] * $back_state[$j];
+                $this->delta_matrix[$i][$j] -= $this->effect * $delta[$i] * $back_state[$j];
             }
         }
 
         return $ret;
+    }
+
+    /**
+     * 蓄積された更新差分を個々で適用する
+     * 
+     * @return [type] [description]
+     */
+    public function correct()
+    {
+        foreach ($this->delta_matrix as $index => $record) {
+            foreach ($record as $key => $val) {
+                $this->matrix[$index][$key] += $val;
+            }
+        }
+
+        $this->delta_matrix = [];
     }
 
     /**
