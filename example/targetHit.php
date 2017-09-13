@@ -22,7 +22,7 @@ use Niisan\phpnn\bundle\Simple;
 // モデルの出力先
 $model_filename = '../dest/targetHitModel';
 $epoch  = 5;
-$effect = 0.005;
+$effect = 0.0005;
 
 // すでに出力済みのモデルがあれば、それを読み込み、無ければモデルを構築する
 if (file_exists($model_filename)) {
@@ -57,7 +57,7 @@ for ($i = 0; $i < 10000; $i++) {
 }
 
 // フィッティングする
-$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY]]);
+$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY], 'effect' => $effect]);
 $bundle->save($model_filename);
 
 // 図に書き出す

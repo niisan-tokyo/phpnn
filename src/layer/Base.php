@@ -170,6 +170,11 @@ abstract class Base
         return $this->matrix;
     }
 
+    public function setEffect($effect)
+    {
+        $this->effect = $effect;
+    }
+
     public function isDropOut()
     {
         return $this->is_dropout;

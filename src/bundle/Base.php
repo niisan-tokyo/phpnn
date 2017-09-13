@@ -27,11 +27,16 @@ abstract class Base
         $X = $train[0];
         $Y = $train[1];
         $epoch = $option['epoch'] ?? 1;
+        if (isset($option['effect'])) {
+            $this->setEffect($option['effect']);
+        }
         for ($i = 1; $i < $epoch + 1; $i++) {
             echo "$i / $epoch \n";
             $prog = new Progress(0, count($X));
-            foreach ($X as $key => $val) {
-                $this->exec($val);
+            $keys = array_keys($X);
+            shuffle($keys);
+            foreach ($keys as $key) {
+                $this->exec($X[$key]);
                 $this->correct($Y[$key]);
                 $prog->advance();
             }
@@ -129,6 +134,13 @@ abstract class Base
         }
 
         echo "loss: $loss \n";
+    }
+
+    private function setEffect($effect)
+    {
+        foreach ($this->bundle as $layer) {
+            $layer->setEffect($effect);
+        }
     }
 
     /**
