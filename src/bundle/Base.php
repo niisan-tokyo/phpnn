@@ -114,7 +114,7 @@ abstract class Base
         $loss = 0;
         $state = (is_array($state)) ? $state : [$state];
         foreach ($state as $key => $val) {
-            $loss += ($this->value[$key] - $val) * ($this->value[$key] - $val) / 2;
+            $loss += ($this->value[$key] - $val) ** 2 / 2;
         }
 
         return $loss;

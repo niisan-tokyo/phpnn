@@ -5,7 +5,7 @@ namespace Niisan\phpnn\layer;
 class HyperbolicTangent extends Base
 {
 
-    protected $max = 2;
+    protected $max = 1;
     protected $offset = 0;
 
     public function activate($val)

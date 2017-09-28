@@ -125,7 +125,7 @@ abstract class Base
 
     /**
      * 蓄積された更新差分を個々で適用する
-     * 
+     *
      * @return [type] [description]
      */
     public function correct()
