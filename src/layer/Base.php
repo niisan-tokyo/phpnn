@@ -5,7 +5,6 @@ namespace Niisan\phpnn\layer;
 /**
  * NNを構成する各レイヤーのベースクラス
  *
- *
  */
 abstract class Base
 {

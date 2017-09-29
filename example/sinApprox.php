@@ -5,16 +5,24 @@ require('../vendor/autoload.php');
 use Niisan\phpnn\layer\Relu;
 use Niisan\phpnn\layer\HyperbolicTangent;
 use Niisan\phpnn\layer\Linear;
+use Niisan\phpnn\bundle\Simple;
 
-$bundle = new Niisan\phpnn\bundle\Simple();
 
-$effect = 0.01;
+
+$effect = 0.001;
 $epoch  = 10;
+$model_filename = '../dest/sinApproxModel';
 
-$bundle->add(new Relu(32), ['effect' => $effect, 'input_dim' => 1]);
-$bundle->add(new HyperbolicTangent(64), ['effect' => $effect]);
-$bundle->add(new Relu(32), ['effect' => $effect]);
-$bundle->add(new Linear(1), ['effect' => $effect]);
+if (file_exists($model_filename)) {
+    $bundle = Simple::load($model_filename);
+} else {
+    $bundle = new Niisan\phpnn\bundle\Simple();
+
+    $bundle->add(new Relu(32), ['input_dim' => 1]);
+    $bundle->add(new HyperbolicTangent(64));
+    $bundle->add(new Relu(32));
+    $bundle->add(new Linear(1));
+}
 
 $trainX = [];
 $trainY = [];
@@ -34,7 +42,8 @@ for ($i = 0; $i < 20000; $i++) {
 }
 
 // フィッティングする
-$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY]]);
+$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY], 'batch_size' => 16, 'effect' => $effect]);
+$bundle->save($model_filename);
 
 $data = check($bundle);
 $str = '';
@@ -63,8 +72,8 @@ function check($bundle)
     //$bundle->switch();
     $loss = 0;
     $ret = [];
-    for ($i = -40; $i != 41; $i++) {
-        $x = pi() * $i / 10;
+    for ($i = -400; $i != 401; $i++) {
+        $x = pi() * $i / 100;
         $y = $bundle->exec($x);
         $z = sin($x);//*cos($x);
         $ret[] = [$x, $y[0]];
