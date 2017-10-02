@@ -43,11 +43,12 @@ abstract class Base
      * 第２要素が出力されるべきデータとなっている
      * 指定できるオプションは以下の通り
      *
-     * epoch        : 学習の繰り返し回数
-     * batch_size   : バッチサイズ。何個分のデータを使用して重みの修正を行うか
-     * effect       : 学習率。
-     * test         : テスト用のデータ。これが存在すると、各epoch後にテストを実施する
-     * test_function: テストに試用する関数名
+     * epoch            : 学習の繰り返し回数
+     * batch_size       : バッチサイズ。何個分のデータを使用して重みの修正を行うか
+     * effect           : 学習率。
+     * test             : テスト用のデータ。これが存在すると、各epoch後にテストを実施する
+     * test_function    : テストに試用する関数名
+     * accuracy_callback: テストデータに対し、予測がどの程度正しいかを測るためのコールバック関数を登録する
      *
      * @param  array $train  訓練データ
      * @param  array $option オプション
@@ -77,7 +78,10 @@ abstract class Base
 
             if (isset($option['test'])) {
                 $method = $option['test_function'] ?? 'loss';
-                $this->{'test' . ucfirst($method)}($option['test']);
+                $acc_callback = $option['accuracy_callback'] ?? null;
+                $str = $this->{'test' . ucfirst($method)}($option['test']);
+                $str .= $this->check_accuracy($option['test'], $acc_callback);
+                echo $str . "\n";
             }
 
         }
@@ -193,7 +197,39 @@ abstract class Base
             $loss += $this->loss($Y[$key]);
         }
 
-        echo "loss: $loss \n";
+        echo "loss: $loss ";
+    }
+
+    /**
+     * テストデータを使って、予測の正確さを計測する
+     *
+     * コールバック関数に、予測の正誤判定ロジックを
+     * クロージャで指定する
+     *
+     * @param  array    $test_data    [description]
+     * @param  callable $acc_callback [description]
+     *
+     * @return string
+     */
+    protected function check_accuracy($test_data, callable $acc_callback = null): string
+    {
+        if ($acc_callback === null) {
+            return '';
+        }
+
+        $X = $test_data[0];
+        $Y = $test_data[1];
+        $sum = $acc = 0;
+        foreach ($X as $key => $val) {
+            $sum++;
+            $res = $this->exec($val);
+            if ($acc_callback($res, $Y[$key])) {
+                $acc++;
+            }
+        }
+
+        $ret = round($acc * 100 / $sum, 1);
+        return "accuracy: $ret % ";
     }
 
     private function setEffect($effect)

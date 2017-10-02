@@ -31,7 +31,7 @@ echo $o[0];
 
 ### learning with training data
 ```
-<php
+<?php
 require('../vendor/autoload.php');
 
 use Niisan\phpnn\layer\Relu;
