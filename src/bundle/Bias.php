@@ -7,10 +7,10 @@ class Bias extends Base
 
     private $input;
 
-    public function exec($state)
+    public function exec($state, $stop = -1)
     {
         $this->input = $state;
-        return $this->foreLoop($state);
+        return $this->foreLoop($state, $stop);
     }
 
     public function correct($state)

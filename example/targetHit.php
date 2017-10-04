@@ -14,7 +14,7 @@
 require('../vendor/autoload.php');
 
 use Niisan\phpnn\layer\Relu;
-use Niisan\phpnn\layer\Sin;
+use Niisan\phpnn\layer\Sigmoid;
 use Niisan\phpnn\layer\Linear;
 use Niisan\phpnn\layer\HyperbolicTangent;
 use Niisan\phpnn\bundle\Simple;
@@ -31,7 +31,7 @@ if (file_exists($model_filename)) {
     $bundle = new Simple();
 
     $bundle->add(new Relu(32), ['input_dim' => 2]);
-    $bundle->add(new HyperbolicTangent(64), ['max_value' => 2]);
+    $bundle->add(new Sigmoid(64), ['max_value' => 2]);
     $bundle->add(new Relu(32));
     $bundle->add(new HyperbolicTangent(1), ['max_value' => 2]);
 }
@@ -57,7 +57,15 @@ for ($i = 0; $i < 10000; $i++) {
 }
 
 // フィッティングする
-$bundle->fit([$trainX, $trainY], ['epoch' => $epoch, 'test' => [$testX, $testY], 'effect' => $effect, 'batch_size' => 16]);
+$bundle->fit([$trainX, $trainY], [
+    'epoch' => $epoch,
+    'test' => [$testX, $testY],
+    'effect' => $effect,
+    'batch_size' => 16,
+    'accuracy_callback' => function($z, $t){
+        return $z[0] * $t > 0;
+    }
+]);
 $bundle->save($model_filename);
 
 // 図に書き出す

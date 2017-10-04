@@ -5,9 +5,9 @@ namespace Niisan\phpnn\bundle;
 class Simple extends Base
 {
 
-    public function exec($value)
+    public function exec($value, $stop = -1)
     {
-        $ret = $this->foreLoop($value);
+        $ret = $this->foreLoop($value, $stop);
         return $ret;
     }
 

@@ -88,7 +88,7 @@ abstract class Base
 
     }
 
-    abstract public function exec($value);
+    abstract public function exec($value, $stop = -1);
 
     abstract public function correct($value);
 
@@ -101,15 +101,18 @@ abstract class Base
      *
      * @return array        出力値
      */
-    protected function foreLoop($state)
+    protected function foreLoop($state, $stop = -1)
     {
         if (!is_array($state)) {
             $state = [$state];
         }
 
         $ret = $state;
-        foreach ($this->bundle as $obj) {
+        foreach ($this->bundle as $key => $obj) {
             $ret = $obj->prop($ret);
+            if ($key == $stop) {
+                return $ret;
+            }
         }
 
         $this->value = $ret;
